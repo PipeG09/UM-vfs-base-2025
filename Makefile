@@ -15,7 +15,7 @@ COMMON_SRCS = $(SRC_DIR)/read-write-block.c $(SRC_DIR)/bitmap.c $(SRC_DIR)/super
 COMMON_HDRS = $(INC_DIR)/vfs.h
 
 # Ejecutables - fuentes con función main
-BINS = vfs-mkfs vfs-info vfs-copy
+BINS = vfs-mkfs vfs-info vfs-copy vfs-ls vfs-lsort vfs-cat vfs-touch vfs-trunc vfs-rm
 
 # Regla principal
 all: $(BINS)
