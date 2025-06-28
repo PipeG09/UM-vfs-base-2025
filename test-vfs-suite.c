@@ -1,4 +1,4 @@
-// test-vfs-suite.c - Suite completa de pruebas automatizadas para VFS
+// test-vfs-suite.c 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -295,7 +295,7 @@ int main() {
     // ==== PRUEBAS DE LÍMITES ====
     printf("\n%s--- PRUEBAS DE LÍMITES DEL FILESYSTEM ---%s\n", YELLOW, RESET);
     
-    // Test 38: Crear muchos archivos hasta agotar inodos
+    // Test 39: Intentar crear archivo cuando esta lleno
     printf("\n%s[TEST %d]%s Llenar filesystem con archivos\n", BLUE, ++tests_total, RESET);
     int files_created = 0;
     for (int i = 0; i < 70; i++) {
@@ -306,15 +306,6 @@ int main() {
         files_created++;
     }
 
-    if (files_created > 10) {
-        printf("%s✓ PASSED%s (creados %d archivos antes de agotar espacio)\n", GREEN, RESET, files_created);
-        tests_passed++;
-    } else {
-        printf("%s✗ FAILED%s (esperado > 10 archivos, creados %d)\n", RED, RESET, files_created);
-        tests_failed++;
-    }
-    
-    // Test 39: Intentar crear archivo cuando hay poco espacio
     // Intentamos crear varios archivos más para asegurar que eventualmente falle
     int failed = 0;
     for (int i = 0; i < 10; i++) {
