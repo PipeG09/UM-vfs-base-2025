@@ -1,3 +1,5 @@
+// vfs-touch.c
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +15,7 @@ int main(int argc, char *argv[]) {
     }
 
     const char *image_path = argv[1];
+    int errors = 0;
 
     // Verify image
     struct superblock sb_struct, *sb = &sb_struct;
@@ -28,19 +31,21 @@ int main(int argc, char *argv[]) {
         // Validate filename
         if (!name_is_valid(filename)) {
             fprintf(stderr, "Invalid filename: %s\n", filename);
+            errors++;
             continue;
         }
 
         // Check if file already exists
         if (dir_lookup(image_path, filename) != 0) {
             fprintf(stderr, "File '%s' already exists\n", filename);
-            continue;
+            return EXIT_FAILURE;
         }
 
         // Create empty file with default permissions (rw-r-----)
         int new_inode = create_empty_file_in_free_inode(image_path, 0640);
         if (new_inode < 0) {
             fprintf(stderr, "Error creating file '%s': %s\n", filename, strerror(errno));
+            errors++;
             continue;
         }
 
@@ -49,11 +54,12 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Error adding directory entry for '%s'\n", filename);
             // Free the inode we just allocated
             free_inode(image_path, new_inode);
+            errors++;
             continue;
         }
 
         DEBUG_PRINT("File '%s' created successfully (inode %d)\n", filename, new_inode);
     }
 
-    return EXIT_SUCCESS;
+    return errors > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

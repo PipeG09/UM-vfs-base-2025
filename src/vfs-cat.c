@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
     }
 
     const char *image_path = argv[1];
+    int errors = 0;
 
     // Verify image
     struct superblock sb_struct, *sb = &sb_struct;
@@ -29,10 +30,12 @@ int main(int argc, char *argv[]) {
         int inode_num = dir_lookup(image_path, filename);
         if (inode_num == 0) {
             fprintf(stderr, "File '%s' not found\n", filename);
+            errors++;
             continue;
         }
         if (inode_num < 0) {
             fprintf(stderr, "Error looking up file '%s'\n", filename);
+            errors++;
             continue;
         }
 
@@ -40,12 +43,14 @@ int main(int argc, char *argv[]) {
         struct inode file_inode;
         if (read_inode(image_path, inode_num, &file_inode) != 0) {
             fprintf(stderr, "Error reading inode for '%s'\n", filename);
+            errors++;
             continue;
         }
 
         // Check if it's a regular file
         if ((file_inode.mode & INODE_MODE_FILE) != INODE_MODE_FILE) {
             fprintf(stderr, "'%s' is not a regular file\n", filename);
+            errors++;
             continue;
         }
 
@@ -54,6 +59,7 @@ int main(int argc, char *argv[]) {
             uint8_t *buffer = malloc(file_inode.size);
             if (!buffer) {
                 fprintf(stderr, "Error allocating memory for file '%s'\n", filename);
+                errors++;
                 continue;
             }
 
@@ -61,6 +67,7 @@ int main(int argc, char *argv[]) {
             if (bytes_read < 0) {
                 fprintf(stderr, "Error reading data from file '%s'\n", filename);
                 free(buffer);
+                errors++;
                 continue;
             }
 
@@ -75,5 +82,5 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    return EXIT_SUCCESS;
+    return errors > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

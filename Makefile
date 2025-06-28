@@ -12,18 +12,25 @@ endif
 
 # Archivos comunes (fuentes sin main)
 COMMON_SRCS = $(SRC_DIR)/read-write-block.c $(SRC_DIR)/bitmap.c $(SRC_DIR)/superblock.c $(SRC_DIR)/rootdir.c $(SRC_DIR)/inode.c $(SRC_DIR)/ls-func.c $(SRC_DIR)/read-write-data.c
-COMMON_HDRS = $(INC_DIR)/vfs.h
+#COMMON_HDRS = $(INC_DIR)/vfs.h
 
 # Ejecutables - fuentes con función main
-BINS = vfs-mkfs vfs-info vfs-copy vfs-ls vfs-lsort vfs-cat vfs-touch vfs-trunc vfs-rm
+BINS = vfs-mkfs vfs-info vfs-copy vfs-ls vfs-lsort vfs-cat vfs-touch vfs-trunc vfs-rm 
+TEST-BINS = test-vfs-suite
 
 # Regla principal
 all: $(BINS)
+
+test: $(TEST-BINS)
 
 # Compilar cada ejecutable
 $(BINS): %: $(SRC_DIR)/%.c $(COMMON_SRCS) $(COMMON_HDRS)
 	$(CC) $(CFLAGS) -o $@ $^ 
 
+$(TEST_BINS): %: %.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 # Limpieza
 clean:
 	rm -f $(BINS)
+	rm -f $(TEST-BINS)
